@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Node} from 'react';
 import {
   SafeAreaView,
@@ -16,6 +16,7 @@ import {
   Text,
   useColorScheme,
   View,
+  PermissionsAndroid,
 } from 'react-native';
 
 import {Button} from 'react-native-paper';
@@ -65,10 +66,45 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const [hasPermissions, setPermissions] = useState(false);
+
+  const requestBluetoothPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+        {
+          title: 'RoboCTRL Bluetooth Permission',
+          message:
+            'RoboCTRL needs access to your bluetooth ' + 'so you can connect.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use bluetooth');
+        setPermissions(true);
+      } else {
+        setPermissions(false);
+        console.log('Bluetooth permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  useEffect(() => {
+    requestBluetoothPermission();
+  }, []);
+
   return (
     <>
-      <StatusBar />
-      <BottomNav />
+      {hasPermissions ? (
+        <>
+          <StatusBar />
+          <BottomNav />
+        </>
+      ) : null}
     </>
 
     /*<SafeAreaView style={backgroundStyle}>
