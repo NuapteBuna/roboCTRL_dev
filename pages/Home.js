@@ -1,15 +1,18 @@
-import React, {Component} from 'react';
+import  {Component} from 'react';
+import * as React from 'react';
 import {
   Platform,
   StyleSheet,
   Text,
   View,
-  Button,
   FlatList,
-  Switch,
   TouchableOpacity,
   ToastAndroid,
 } from 'react-native';
+import {
+  Button,
+  Switch, 
+} from 'react-native-paper';
 var _ = require('lodash');
 import BluetoothSerial from 'react-native-bluetooth-serial-speedy';
 
@@ -112,7 +115,8 @@ export default class Home extends Component {
         this.setState({connected: true});
       })
       .catch(err => console.log(err.message));
-  }
+}
+
   render() {
     return (
       <View style={styles.container}>
@@ -120,16 +124,16 @@ export default class Home extends Component {
           <Text style={styles.toolbarTitle}>Bluetooth Device List</Text>
           <View style={styles.toolbarButton}>
             <Switch
-              value={this.state.isEnabled}
-              onValueChange={val => this.toggleBluetooth(val)}
+              value={this.state.isEnabled} onValueChange={val => this.toggleBluetooth(val)}
             />
           </View>
         </View>
-        <Button
-          onPress={this.discoverAvailableDevices.bind(this)}
-          title="Scan for Devices"
-          color="#841584"
-        />
+        <Button 
+          mode ="contained"
+          buttonColor="#2b9f0580"
+          onPress={()=>this.discoverAvailableDevices.bind(this)}>
+          Scan for Devices
+        </Button>
         <FlatList
           style={{flex: 1}}
           data={this.state.devices}
@@ -137,10 +141,11 @@ export default class Home extends Component {
           renderItem={item => this._renderItem(item)}
         />
         <Button
-          onPress={this.toggleSwitch.bind(this)}
-          title="Switch(On/Off)"
-          color="#841584"
-        />
+          mode="contained"
+          buttonColor="#2b9f0580"
+          onPress={()=> this.toggleSwitch.bind(this)}>
+          Switch(On/Off)
+        </Button>
       </View>
     );
   }
@@ -149,7 +154,7 @@ export default class Home extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#00b20080',//daca schimbi asta chiar dau cu tine de pereti<3
   },
   toolbar: {
     paddingTop: 30,
@@ -177,3 +182,4 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
 });
+//lasa comentarii ca n am nicio idee ce scrii tu aici pls pls pls<3

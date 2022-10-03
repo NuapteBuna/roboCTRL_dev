@@ -4,7 +4,7 @@ import {Button} from 'react-native-paper';
 const Testing = () => {
   return (
     <>
-      <Text>sdafklhsdlkfhaklsdjhfaslkjdfhalkdhflkasdjhf</Text>
+      <Text>eu sunt zeu</Text>
       <Button
         mode="contained"
         onPress={() => {
