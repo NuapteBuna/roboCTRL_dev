@@ -1,14 +1,14 @@
 import * as React from 'react';
 import {BottomNavigation, Text} from 'react-native-paper';
 
-import Home from '../../pages/Home';
 import Testing from '../../pages/Testing';
+import Home from '../../pages/Home';
 
 const MusicRoute = () => <Home />;
 
 const AlbumsRoute = () => <Testing />;
 
-const RecentsRoute = () => <Text>recents</Text>;
+const RecentsRoute = () => <Home />;
 
 const NotificationsRoute = () => <Text>Notifications</Text>;
 
