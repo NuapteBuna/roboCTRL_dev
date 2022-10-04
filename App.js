@@ -24,12 +24,14 @@ import {Button} from 'react-native-paper';
 import {
   Colors,
   DebugInstructions,
-  Header,
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {useTheme} from 'react-native-paper';
 
 import BottomNav from './components/BottomNav/BottomNav';
+
+import Header from './components/Header/Header';
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
@@ -59,8 +61,10 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const App = () => {
+const App = props => {
   const isDarkMode = useColorScheme() === 'dark';
+
+  const {colors} = props.theme;
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -101,7 +105,10 @@ const App = () => {
     <>
       {hasPermissions ? (
         <>
-          <StatusBar />
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={colors.background}
+          />
           <BottomNav />
         </>
       ) : null}

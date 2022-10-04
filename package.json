@@ -10,6 +10,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@assembless/react-native-material-you": "^1.0.0-beta.4",
+    "beercss": "^2.2.11",
     "react": "18.1.0",
     "react-native": "0.70.1",
     "react-native-bluetooth-serial-speedy": "^1.0.4",

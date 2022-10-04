@@ -17,13 +17,19 @@ import {CardTitle} from 'react-native-paper/lib/typescript/components/Card/CardT
 
 import {FAB} from 'react-native-paper';
 
-const Home = () => {
+import Header from '../components/Header/Header';
+import {ActivityIndicator, MD2Colors} from 'react-native-paper';
+import {withTheme} from 'react-native-paper';
+
+const Home = props => {
   const [isEnabled, setIsEnabled] = React.useState(true);
   const [discovering, setDiscovering] = React.useState(false);
   const [devices, setDevices] = React.useState([]);
   const [unpairedDevices, setUnpairedDevices] = React.useState([]);
   const [connected, setConnected] = React.useState(false);
   const [connecting, setConnecting] = React.useState(false);
+
+  const {colors} = props.theme;
 
   React.useEffect(() => {
     Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
@@ -125,9 +131,10 @@ const Home = () => {
 
   return (
     <>
+      <Header title="Bluetooth" />
       <View style={styles.container}>
         <View style={styles.toolbar}>
-          <Text style={styles.toolbarTitle}>Placeholder</Text>
+          {/*<Text style={styles.toolbarTitle}>Placeholder</Text>*/}
           <View style={styles.toolbarButton}>
             {/*<Switch value={isEnabled} onValueChange={ToggleBluetooth} />*/}
           </View>
@@ -137,11 +144,30 @@ const Home = () => {
           onPress={() => DiscoverAvailableDevices.bind(this)}>
           Scan for Devices
   </Button>*/}
-        <Text
-          variant="bodyLarge"
-          style={{fontWeight: 'bold', marginLeft: 20, marginBottom: 5}}>
-          Devices
-        </Text>
+        <View style={{}}>
+          <Text
+            variant="bodyMedium"
+            style={{
+              fontWeight: 'bold',
+              marginLeft: 20,
+              //color: colors.primary,
+            }}>
+            Available devices
+          </Text>
+          <ActivityIndicator
+            animating={true}
+            color={colors.primary}
+            style={{
+              flex: 1,
+              alignContent: 'flex-end',
+              alignSelf: 'flex-end',
+              marginRight: 25,
+              marginBottom: 20,
+              marginTop: -12,
+            }}
+            size={12}
+          />
+        </View>
         {devices.map(item => {
           return (
             <View style={styles.deviceNameWrap} key={item.id}>
@@ -160,7 +186,7 @@ const Home = () => {
           mode="contained"
           onPress={() => toggleSwitch.bind(this)}
           style={{
-            width: 80,
+            width: 150,
             alignSelf: 'center',
             bottom: 16,
             position: 'absolute',
@@ -177,11 +203,12 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default withTheme(Home);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 50,
   },
   toolbar: {
     paddingTop: 30,
