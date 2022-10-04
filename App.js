@@ -66,7 +66,7 @@ const App = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const [hasPermissions, setPermissions] = useState(false);
+  const [hasPermissions, setPermissions] = useState(true);
 
   const requestBluetoothPermission = async () => {
     try {
@@ -85,7 +85,7 @@ const App = () => {
         console.log('You can use bluetooth');
         setPermissions(true);
       } else {
-        setPermissions(false);
+        //setPermissions(false);
         console.log('Bluetooth permission denied');
       }
     } catch (err) {
