@@ -139,7 +139,7 @@ const Home = () => {
   </Button>*/}
         <Text
           variant="bodyLarge"
-          style={{fontWeight: 'bold', marginLeft: 20, marginBottom: -15}}>
+          style={{fontWeight: 'bold', marginLeft: 20, marginBottom: 5}}>
           Devices
         </Text>
         {devices.map(item => {
@@ -205,6 +205,7 @@ const styles = StyleSheet.create({
   },
   deviceNameWrap: {
     margin: 20,
+    marginTop: 0,
   },
   fab: {
     position: 'absolute',
