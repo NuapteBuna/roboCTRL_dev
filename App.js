@@ -98,20 +98,18 @@ const App = props => {
   };
 
   useEffect(() => {
-    requestBluetoothPermission();
+    if (!hasPermissions) {
+      requestBluetoothPermission();
+    }
   }, []);
 
   return (
     <>
-      {hasPermissions ? (
-        <>
-          <StatusBar
-            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-            backgroundColor={colors.background}
-          />
-          <BottomNav />
-        </>
-      ) : null}
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={colors.background}
+      />
+      <BottomNav />
     </>
 
     /*<SafeAreaView style={backgroundStyle}>
