@@ -6,7 +6,7 @@ import Home from '../../pages/Home';
 
 const MusicRoute = () => <Home />;
 
-const AlbumsRoute = () => <Testing />;
+const NavigationRoute = () => <Testing />;
 
 const RecentsRoute = () => <Home />;
 
@@ -21,7 +21,12 @@ const BottomNav = () => {
       focusedIcon: 'bluetooth-connect',
       unfocusedIcon: 'bluetooth-connect',
     },
-    {key: 'albums', title: 'Albums', focusedIcon: 'album'},
+    {
+      key: 'navigation',
+      title: 'Navigation',
+      focusedIcon: 'navigation',
+      unfocusedIcon: 'navigation-outline',
+    },
     {key: 'recents', title: 'Recents', focusedIcon: 'history'},
     {
       key: 'notifications',
@@ -33,7 +38,7 @@ const BottomNav = () => {
 
   const renderScene = BottomNavigation.SceneMap({
     music: MusicRoute,
-    albums: AlbumsRoute,
+    navigation: NavigationRoute,
     recents: RecentsRoute,
     notifications: NotificationsRoute,
   });

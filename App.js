@@ -33,6 +33,8 @@ import BottomNav from './components/BottomNav/BottomNav';
 
 import Header from './components/Header/Header';
 
+import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
+
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const Section = ({children, title}): Node => {
@@ -70,46 +72,59 @@ const App = props => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const [hasPermissions, setPermissions] = useState(true);
+  const [hasPermissions, setPermissions] = useState(false);
 
   const requestBluetoothPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-        {
-          title: 'RoboCTRL Bluetooth Permission',
-          message:
-            'RoboCTRL needs access to your bluetooth ' + 'so you can connect.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
+    requestMultiple([
+      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+      PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE,
+    ]).then(statuses => {
+      console.log(
+        'Bluetooth connect',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT],
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('You can use bluetooth');
-        setPermissions(true);
-      } else {
-        //setPermissions(false);
-        console.log('Bluetooth permission denied');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
+      console.log(
+        'Bluetooth scan',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_SCAN],
+      );
+      console.log(
+        'Bluetooth advertise',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE],
+      );
+    });
   };
 
   useEffect(() => {
-    if (!hasPermissions) {
-      requestBluetoothPermission();
-    }
+    requestMultiple([
+      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+      PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE,
+    ]).then(statuses => {
+      console.log(
+        'Bluetooth connect',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT],
+      );
+      console.log(
+        'Bluetooth scan',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_SCAN],
+      );
+      console.log(
+        'Bluetooth advertise',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE],
+      );
+    });
   }, []);
 
   return (
     <>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.background}
-      />
-      <BottomNav />
+      <>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={colors.background}
+        />
+        <BottomNav />
+      </>
     </>
 
     /*<SafeAreaView style={backgroundStyle}>

@@ -39,7 +39,7 @@ export default function Main() {
         background: palette.system_neutral1[2],
 
         surface: palette.system_neutral2[2],
-        surfaceVariant: palette.system_neutral1[2],
+        surfaceVariant: palette.system_neutral2[1],
         surfaceDisabled: palette.system_accent1[6],
         onSurfaceDisabled: palette.system_accent1[6],
 
