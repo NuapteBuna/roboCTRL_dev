@@ -3,10 +3,15 @@ import {BottomNavigation, Text} from 'react-native-paper';
 
 import Testing from '../../pages/Testing';
 import Home from '../../pages/Home';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const MusicRoute = () => <Home />;
 
-const NavigationRoute = () => <Testing />;
+const NavigationRoute = () => (
+  <GestureHandlerRootView style={{flex: 1}}>
+    <Testing />
+  </GestureHandlerRootView>
+);
 
 const RecentsRoute = () => <Home />;
 
