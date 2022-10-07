@@ -20,6 +20,9 @@ import {FAB} from 'react-native-paper';
 import Header from '../components/Header/Header';
 import {ActivityIndicator, MD2Colors} from 'react-native-paper';
 import {withTheme} from 'react-native-paper';
+import {Badge} from 'react-native-paper';
+import {Icon} from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
+import {SegmentedButtons} from 'react-native-paper';
 
 const Home = props => {
   const [isEnabled, setIsEnabled] = React.useState(true);
@@ -29,6 +32,15 @@ const Home = props => {
   const [connected, setConnected] = React.useState(false);
   const [connecting, setConnecting] = React.useState(false);
 
+  const [name, setName] = React.useState('Device');
+  const [address, setAddress] = React.useState('Address');
+  const [id, setId] = React.useState('ID');
+  const [devclass, setDevClass] = React.useState('Class');
+
+  const [received, setReceived] = React.useState('');
+
+  const [value, setValue] = React.useState('info');
+
   const {colors} = props.theme;
 
   React.useEffect(() => {
@@ -37,8 +49,21 @@ const Home = props => {
         const [isEnabled, devices] = values;
         setIsEnabled(isEnabled);
         setDevices(devices);
+        console.log(devices);
       },
     );
+
+    BluetoothSerial.withDelimiter('\n').then(() => {
+      Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
+        values => {
+          const [isEnabled, devices] = values;
+          setDevices(devices);
+        },
+      );
+      BluetoothSerial.on('read', data => {
+        setReceived(data.data);
+      });
+    });
 
     BluetoothSerial.on('bluetoothEnabled', () => {
       Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
@@ -48,7 +73,6 @@ const Home = props => {
           console.log(devices);
         },
       );
-
       BluetoothSerial.on('bluetoothDisabled', () => {
         setDevices([]);
       });
@@ -62,7 +86,11 @@ const Home = props => {
     BluetoothSerial.connect(device.id)
       .then(res => {
         console.log(`Connected to device ${device.name}`);
-
+        setConnected(true);
+        setName(device.name);
+        setAddress(device.address);
+        setId(device.id);
+        setDevClass(device.class);
         ToastAndroid.show(
           `Connected to device ${device.name}`,
           ToastAndroid.SHORT,
@@ -104,23 +132,23 @@ const Home = props => {
   };
 
   const DiscoverAvailableDevices = () => {
-    if (discovering) {
-      return false;
-    } else {
-      setDiscovering(true);
-      BluetoothSerial.discoverUnpairedDevices()
-        .then(unpairedDevices => {
-          const uniqueDevices = _.uniqBy(unpairedDevices, 'id');
-          console.log(uniqueDevices);
-          setUnpairedDevices(uniqueDevices);
-          setDiscovering(false);
-        })
-        .catch(err => console.log(err.message));
-    }
+    Disable();
+    setConnected(false);
+    Enable();
+    setDiscovering(true);
+    /*BluetoothSerial.discoverUnpairedDevices()
+      .then(unpairedDevices => {
+        const uniqueDevices = _.uniqBy(unpairedDevices, 'id');
+        console.log(uniqueDevices);
+        setUnpairedDevices(uniqueDevices);
+        setDiscovering(false);
+      })
+      .catch(err => console.log(err.message)); */
   };
 
   const toggleSwitch = () => {
-    BluetoothSerial.write('T')
+    console.log('pressed');
+    BluetoothSerial.write('120,100p')
       .then(res => {
         console.log(res);
         console.log('Successfully wrote to device');
@@ -144,6 +172,61 @@ const Home = props => {
           onPress={() => DiscoverAvailableDevices.bind(this)}>
           Scan for Devices
   </Button>*/}
+        {connected ? (
+          <>
+            <Text
+              variant="bodyMedium"
+              style={{
+                fontWeight: 'bold',
+                marginLeft: 20,
+              }}>
+              Connected to
+            </Text>
+            <Card style={styles.connectedcard} mode="contained">
+              <Card.Content>
+                <Title
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                  }}>
+                  {name}
+                </Title>
+                <Text style={{fontSize: 16}}>
+                  Address: <Text style={{fontWeight: '500'}}>{address}</Text>
+                </Text>
+                <Text style={{fontSize: 16}}>
+                  ID: <Text style={{fontWeight: '500'}}>{id}</Text>
+                </Text>
+                <Text style={{fontSize: 16}}>
+                  Class: <Text style={{fontWeight: '500'}}>{devclass}</Text>
+                </Text>
+              </Card.Content>
+              <SegmentedButtons
+                value={value}
+                onValueChange={setValue}
+                buttons={[
+                  {
+                    value: 'info',
+                    label: 'Information',
+                    icon: 'information-outline',
+                  },
+                  {
+                    value: 'disconnect',
+                    label: 'Forget',
+                    icon: 'trash-can',
+                    onPress: () => {
+                      Disable();
+                      setConnected(false);
+                      Enable();
+                    },
+                  },
+                ]}
+                style={styles.group}
+              />
+            </Card>
+          </>
+        ) : null}
         <View style={{}}>
           <Text
             variant="bodyMedium"
@@ -171,9 +254,14 @@ const Home = props => {
         {devices.map(item => {
           return (
             <View style={styles.deviceNameWrap} key={item.id}>
-              <Card key={item.id} mode="elevated" onPress={() => Connect(item)}>
+              <Card
+                key={item.id}
+                mode="contained"
+                style={styles.card}
+                onPress={() => Connect(item)}>
                 <Card.Content>
                   <Title>{item.name ? item.name : item.id}</Title>
+                  <FAB icon="bluetooth" style={styles.fab2} mode="flat"></FAB>
                   <Paragraph>
                     {item.address ? item.address : 'Unknown Address'}
                   </Paragraph>
@@ -182,9 +270,10 @@ const Home = props => {
             </View>
           );
         })}
+        <Text>{received}</Text>
         <Button
           mode="contained"
-          onPress={() => toggleSwitch.bind(this)}
+          onPress={() => toggleSwitch()}
           style={{
             width: 150,
             alignSelf: 'center',
@@ -196,7 +285,7 @@ const Home = props => {
         <FAB
           icon="refresh"
           style={styles.fab}
-          onPress={() => DiscoverAvailableDevices}
+          onPress={() => DiscoverAvailableDevices()}
         />
       </View>
     </>
@@ -209,6 +298,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 50,
+  },
+  card: {
+    borderRadius: 20,
+  },
+  connectedcard: {
+    margin: 20,
+    borderRadius: 20,
+  },
+
+  group: {
+    alignContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    textAlign: 'center',
+    margin: 10,
   },
   toolbar: {
     paddingTop: 30,
@@ -235,6 +339,12 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+  fab2: {
     position: 'absolute',
     margin: 16,
     right: 0,

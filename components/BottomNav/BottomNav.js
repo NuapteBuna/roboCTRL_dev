@@ -3,10 +3,15 @@ import {BottomNavigation, Text} from 'react-native-paper';
 
 import Testing from '../../pages/Testing';
 import Home from '../../pages/Home';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const MusicRoute = () => <Home />;
 
-const AlbumsRoute = () => <Testing />;
+const NavigationRoute = () => (
+  <GestureHandlerRootView style={{flex: 1}}>
+    <Testing />
+  </GestureHandlerRootView>
+);
 
 const RecentsRoute = () => <Home />;
 
@@ -21,7 +26,12 @@ const BottomNav = () => {
       focusedIcon: 'bluetooth-connect',
       unfocusedIcon: 'bluetooth-connect',
     },
-    {key: 'albums', title: 'Albums', focusedIcon: 'album'},
+    {
+      key: 'navigation',
+      title: 'Navigation',
+      focusedIcon: 'navigation',
+      unfocusedIcon: 'navigation-outline',
+    },
     {key: 'recents', title: 'Recents', focusedIcon: 'history'},
     {
       key: 'notifications',
@@ -33,7 +43,7 @@ const BottomNav = () => {
 
   const renderScene = BottomNavigation.SceneMap({
     music: MusicRoute,
-    albums: AlbumsRoute,
+    navigation: NavigationRoute,
     recents: RecentsRoute,
     notifications: NotificationsRoute,
   });

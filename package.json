@@ -11,12 +11,15 @@
   },
   "dependencies": {
     "@assembless/react-native-material-you": "^1.0.0-beta.4",
-    "beercss": "^2.2.11",
+    "korol-joystick-custom": "^1.7.1",
     "react": "18.1.0",
-    "react-native": "0.70.1",
+    "react-native": "0.70.2",
     "react-native-bluetooth-serial-speedy": "^1.0.4",
+    "react-native-gesture-handler": "^2.7.0",
     "react-native-paper": "^5.0.0-rc.6",
-    "react-native-vector-icons": "^9.2.0"
+    "react-native-permissions": "^3.6.1",
+    "react-native-vector-icons": "^9.2.0",
+    "react-native-webview": "^11.23.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

@@ -14,6 +14,7 @@ import {
   defaultPalette,
 } from '@assembless/react-native-material-you';
 import {getPaletteSync} from '@assembless/react-native-material-you';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 export default function Main() {
   const palette = getPaletteSync();
@@ -39,7 +40,7 @@ export default function Main() {
         background: palette.system_neutral1[2],
 
         surface: palette.system_neutral2[2],
-        surfaceVariant: palette.system_neutral1[2],
+        surfaceVariant: palette.system_neutral2[1],
         surfaceDisabled: palette.system_accent1[6],
         onSurfaceDisabled: palette.system_accent1[6],
 
@@ -58,7 +59,9 @@ export default function Main() {
   return (
     <MaterialYouService fallbackPalette={defaultPalette}>
       <PaperProvider theme={theme}>
-        <App theme={theme} />
+        <GestureHandlerRootView style={{flex: 1}}>
+          <App theme={theme} />
+        </GestureHandlerRootView>
       </PaperProvider>
     </MaterialYouService>
   );
