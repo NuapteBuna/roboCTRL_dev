@@ -35,6 +35,9 @@ import Header from './components/Header/Header';
 
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
 
+import {useContext} from 'react';
+import {State} from 'react-native-gesture-handler';
+
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 const Section = ({children, title}): Node => {
@@ -62,6 +65,7 @@ const Section = ({children, title}): Node => {
     </View>
   );
 };
+const StateContext = React.createContext();
 
 const App = props => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -116,6 +120,11 @@ const App = props => {
     });
   }, []);
 
+  const [posX, setPosX] = useState(0);
+  const [posY, setPosY] = useState(0);
+
+  const [move, setMove] = useState(false);
+
   return (
     <>
       <>
@@ -123,7 +132,10 @@ const App = props => {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={colors.background}
         />
-        <BottomNav />
+        <StateContext.Provider
+          value={{posX, setPosX, posY, setPosY, move, setMove}}>
+          <BottomNav />
+        </StateContext.Provider>
       </>
     </>
 
@@ -183,3 +195,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+export {StateContext};

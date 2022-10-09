@@ -1,16 +1,24 @@
 import {Text} from 'react-native-paper';
 import {Button} from 'react-native-paper';
 import {View} from 'react-native';
-import {useCallback, useState} from 'react';
+import {useCallback, useContext, useState} from 'react';
 import {KorolJoystick} from 'korol-joystick-custom';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {withTheme} from 'react-native-paper';
+import Header from '../components/Header/Header';
+import {useEffect} from 'react';
+
+import {Checkbox} from 'react-native-paper';
+import {StateContext} from '../App';
 
 const Testing = props => {
   const {colors} = props.theme;
 
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
+
+  const {posX, setPosX, posY, setPosY, move, setMove} =
+    useContext(StateContext);
 
   const debounce = func => {
     let timer;
@@ -25,17 +33,32 @@ const Testing = props => {
   };
 
   const handleChangeX = input => {
-    setX(input);
+    if (input != x) {
+      setX(input);
+      //setPosX(input);
+    }
   };
   const optimizedX = useCallback(debounce(handleChangeX));
 
-  const handleChangeY = async input => {
-    setY(input);
+  const handleChangeY = input => {
+    if (input != y) {
+      setY(input);
+      //posY = input;
+      //setPosY(input);
+    }
   };
   const optimizedY = useCallback(debounce(handleChangeY));
 
+  useEffect(() => {
+    setPosX(x);
+    setPosY(y);
+  }, [x, y]);
+
+  const [checked, setChecked] = useState(false);
+
   return (
     <>
+      <Header title="Navigation" />
       <GestureHandlerRootView style={{flex: 1}}>
         <View
           style={{
@@ -44,10 +67,18 @@ const Testing = props => {
             alignContent: 'center',
             alignItems: 'center',
             alignSelf: 'center',
-            marginTop: '100%',
+            marginTop: '60%',
           }}>
+          <Text>hello world</Text>
+          <Checkbox
+            status={checked ? 'checked' : 'unchecked'}
+            onPress={() => {
+              setChecked(!checked);
+              setMove(!checked);
+            }}></Checkbox>
           <KorolJoystick
-            color={colors.primary}
+            //color={colors.secondary}
+            radius={75}
             onMove={data => (
               optimizedX(data.position.x), optimizedY(data.position.y)
             )}
@@ -55,8 +86,6 @@ const Testing = props => {
               optimizedX(data.position.x), optimizedY(data.position.y)
             )}
           />
-          <Text>{x.toFixed(2)}</Text>
-          <Text>{y.toFixed(2)}</Text>
         </View>
       </GestureHandlerRootView>
     </>

@@ -24,6 +24,9 @@ import {Badge} from 'react-native-paper';
 import {Icon} from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
 import {SegmentedButtons} from 'react-native-paper';
 
+import {StateContext} from '../App';
+import {useContext} from 'react';
+
 const Home = props => {
   const [isEnabled, setIsEnabled] = React.useState(true);
   const [discovering, setDiscovering] = React.useState(false);
@@ -42,6 +45,9 @@ const Home = props => {
   const [value, setValue] = React.useState('info');
 
   const {colors} = props.theme;
+
+  const {posX, setPosX, posY, setPosY, move, setMove} =
+    useContext(StateContext);
 
   React.useEffect(() => {
     Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
@@ -160,6 +166,8 @@ const Home = props => {
   return (
     <>
       <Header title="Bluetooth" />
+      <Text>{move ? 'yes' : 'no'}</Text>
+      <Text>{posX}</Text>
       <View style={styles.container}>
         <View style={styles.toolbar}>
           {/*<Text style={styles.toolbarTitle}>Placeholder</Text>*/}
