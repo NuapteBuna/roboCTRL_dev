@@ -17,7 +17,17 @@ import {CardTitle} from 'react-native-paper/lib/typescript/components/Card/CardT
 
 import {FAB} from 'react-native-paper';
 
-const Home = () => {
+import Header from '../components/Header/Header';
+import {ActivityIndicator, MD2Colors} from 'react-native-paper';
+import {withTheme} from 'react-native-paper';
+import {Badge} from 'react-native-paper';
+import {Icon} from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
+import {SegmentedButtons} from 'react-native-paper';
+
+import {StateContext} from '../App';
+import {useContext} from 'react';
+
+const Home = props => {
   const [isEnabled, setIsEnabled] = React.useState(true);
   const [discovering, setDiscovering] = React.useState(false);
   const [devices, setDevices] = React.useState([]);
@@ -25,14 +35,41 @@ const Home = () => {
   const [connected, setConnected] = React.useState(false);
   const [connecting, setConnecting] = React.useState(false);
 
+  const [name, setName] = React.useState('Device');
+  const [address, setAddress] = React.useState('Address');
+  const [id, setId] = React.useState('ID');
+  const [devclass, setDevClass] = React.useState('Class');
+
+  const [received, setReceived] = React.useState('');
+
+  const [value, setValue] = React.useState('info');
+
+  const {colors} = props.theme;
+
+  const {posX, setPosX, posY, setPosY, move, setMove} =
+    useContext(StateContext);
+
   React.useEffect(() => {
     Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
       values => {
         const [isEnabled, devices] = values;
         setIsEnabled(isEnabled);
         setDevices(devices);
+        console.log(devices);
       },
     );
+
+    BluetoothSerial.withDelimiter('\n').then(() => {
+      Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
+        values => {
+          const [isEnabled, devices] = values;
+          setDevices(devices);
+        },
+      );
+      BluetoothSerial.on('read', data => {
+        setReceived(data.data);
+      });
+    });
 
     BluetoothSerial.on('bluetoothEnabled', () => {
       Promise.all([BluetoothSerial.isEnabled(), BluetoothSerial.list()]).then(
@@ -42,7 +79,6 @@ const Home = () => {
           console.log(devices);
         },
       );
-
       BluetoothSerial.on('bluetoothDisabled', () => {
         setDevices([]);
       });
@@ -56,7 +92,11 @@ const Home = () => {
     BluetoothSerial.connect(device.id)
       .then(res => {
         console.log(`Connected to device ${device.name}`);
-
+        setConnected(true);
+        setName(device.name);
+        setAddress(device.address);
+        setId(device.id);
+        setDevClass(device.class);
         ToastAndroid.show(
           `Connected to device ${device.name}`,
           ToastAndroid.SHORT,
@@ -98,23 +138,23 @@ const Home = () => {
   };
 
   const DiscoverAvailableDevices = () => {
-    if (discovering) {
-      return false;
-    } else {
-      setDiscovering(true);
-      BluetoothSerial.discoverUnpairedDevices()
-        .then(unpairedDevices => {
-          const uniqueDevices = _.uniqBy(unpairedDevices, 'id');
-          console.log(uniqueDevices);
-          setUnpairedDevices(uniqueDevices);
-          setDiscovering(false);
-        })
-        .catch(err => console.log(err.message));
-    }
+    Disable();
+    setConnected(false);
+    Enable();
+    setDiscovering(true);
+    /*BluetoothSerial.discoverUnpairedDevices()
+      .then(unpairedDevices => {
+        const uniqueDevices = _.uniqBy(unpairedDevices, 'id');
+        console.log(uniqueDevices);
+        setUnpairedDevices(uniqueDevices);
+        setDiscovering(false);
+      })
+      .catch(err => console.log(err.message)); */
   };
 
   const toggleSwitch = () => {
-    BluetoothSerial.write('T')
+    console.log('pressed');
+    BluetoothSerial.write('120,100p')
       .then(res => {
         console.log(res);
         console.log('Successfully wrote to device');
@@ -125,9 +165,12 @@ const Home = () => {
 
   return (
     <>
+      <Header title="Bluetooth" />
+      <Text>{move ? 'yes' : 'no'}</Text>
+      <Text>{posX}</Text>
       <View style={styles.container}>
         <View style={styles.toolbar}>
-          <Text style={styles.toolbarTitle}>Placeholder</Text>
+          {/*<Text style={styles.toolbarTitle}>Placeholder</Text>*/}
           <View style={styles.toolbarButton}>
             {/*<Switch value={isEnabled} onValueChange={ToggleBluetooth} />*/}
           </View>
@@ -137,17 +180,96 @@ const Home = () => {
           onPress={() => DiscoverAvailableDevices.bind(this)}>
           Scan for Devices
   </Button>*/}
-        <Text
-          variant="bodyLarge"
-          style={{fontWeight: 'bold', marginLeft: 20, marginBottom: 5}}>
-          Devices
-        </Text>
+        {connected ? (
+          <>
+            <Text
+              variant="bodyMedium"
+              style={{
+                fontWeight: 'bold',
+                marginLeft: 20,
+              }}>
+              Connected to
+            </Text>
+            <Card style={styles.connectedcard} mode="contained">
+              <Card.Content>
+                <Title
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                  }}>
+                  {name}
+                </Title>
+                <Text style={{fontSize: 16}}>
+                  Address: <Text style={{fontWeight: '500'}}>{address}</Text>
+                </Text>
+                <Text style={{fontSize: 16}}>
+                  ID: <Text style={{fontWeight: '500'}}>{id}</Text>
+                </Text>
+                <Text style={{fontSize: 16}}>
+                  Class: <Text style={{fontWeight: '500'}}>{devclass}</Text>
+                </Text>
+              </Card.Content>
+              <SegmentedButtons
+                value={value}
+                onValueChange={setValue}
+                buttons={[
+                  {
+                    value: 'info',
+                    label: 'Information',
+                    icon: 'information-outline',
+                  },
+                  {
+                    value: 'disconnect',
+                    label: 'Forget',
+                    icon: 'trash-can',
+                    onPress: () => {
+                      Disable();
+                      setConnected(false);
+                      Enable();
+                    },
+                  },
+                ]}
+                style={styles.group}
+              />
+            </Card>
+          </>
+        ) : null}
+        <View style={{}}>
+          <Text
+            variant="bodyMedium"
+            style={{
+              fontWeight: 'bold',
+              marginLeft: 20,
+              //color: colors.primary,
+            }}>
+            Available devices
+          </Text>
+          <ActivityIndicator
+            animating={true}
+            color={colors.primary}
+            style={{
+              flex: 1,
+              alignContent: 'flex-end',
+              alignSelf: 'flex-end',
+              marginRight: 25,
+              marginBottom: 20,
+              marginTop: -12,
+            }}
+            size={12}
+          />
+        </View>
         {devices.map(item => {
           return (
             <View style={styles.deviceNameWrap} key={item.id}>
-              <Card key={item.id} mode="elevated" onPress={() => Connect(item)}>
+              <Card
+                key={item.id}
+                mode="contained"
+                style={styles.card}
+                onPress={() => Connect(item)}>
                 <Card.Content>
                   <Title>{item.name ? item.name : item.id}</Title>
+                  <FAB icon="bluetooth" style={styles.fab2} mode="flat"></FAB>
                   <Paragraph>
                     {item.address ? item.address : 'Unknown Address'}
                   </Paragraph>
@@ -156,11 +278,12 @@ const Home = () => {
             </View>
           );
         })}
+        <Text>{received}</Text>
         <Button
           mode="contained"
-          onPress={() => toggleSwitch.bind(this)}
+          onPress={() => toggleSwitch()}
           style={{
-            width: 80,
+            width: 150,
             alignSelf: 'center',
             bottom: 16,
             position: 'absolute',
@@ -170,18 +293,34 @@ const Home = () => {
         <FAB
           icon="refresh"
           style={styles.fab}
-          onPress={() => DiscoverAvailableDevices}
+          onPress={() => DiscoverAvailableDevices()}
         />
       </View>
     </>
   );
 };
 
-export default Home;
+export default withTheme(Home);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 50,
+  },
+  card: {
+    borderRadius: 20,
+  },
+  connectedcard: {
+    margin: 20,
+    borderRadius: 20,
+  },
+
+  group: {
+    alignContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    textAlign: 'center',
+    margin: 10,
   },
   toolbar: {
     paddingTop: 30,
@@ -208,6 +347,12 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
   fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+  fab2: {
     position: 'absolute',
     margin: 16,
     right: 0,

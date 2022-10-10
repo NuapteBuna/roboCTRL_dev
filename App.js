@@ -24,12 +24,19 @@ import {Button} from 'react-native-paper';
 import {
   Colors,
   DebugInstructions,
-  Header,
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {useTheme} from 'react-native-paper';
 
 import BottomNav from './components/BottomNav/BottomNav';
+
+import Header from './components/Header/Header';
+
+import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
+
+import {useContext} from 'react';
+import {State} from 'react-native-gesture-handler';
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
@@ -58,53 +65,78 @@ const Section = ({children, title}): Node => {
     </View>
   );
 };
+const StateContext = React.createContext();
 
-const App = () => {
+const App = props => {
   const isDarkMode = useColorScheme() === 'dark';
+
+  const {colors} = props.theme;
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const [hasPermissions, setPermissions] = useState(true);
+  const [hasPermissions, setPermissions] = useState(false);
 
   const requestBluetoothPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-        {
-          title: 'RoboCTRL Bluetooth Permission',
-          message:
-            'RoboCTRL needs access to your bluetooth ' + 'so you can connect.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
+    requestMultiple([
+      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+      PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE,
+    ]).then(statuses => {
+      console.log(
+        'Bluetooth connect',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT],
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('You can use bluetooth');
-        setPermissions(true);
-      } else {
-        //setPermissions(false);
-        console.log('Bluetooth permission denied');
-      }
-    } catch (err) {
-      console.warn(err);
-    }
+      console.log(
+        'Bluetooth scan',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_SCAN],
+      );
+      console.log(
+        'Bluetooth advertise',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE],
+      );
+    });
   };
 
   useEffect(() => {
-    requestBluetoothPermission();
+    requestMultiple([
+      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+      PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE,
+    ]).then(statuses => {
+      console.log(
+        'Bluetooth connect',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT],
+      );
+      console.log(
+        'Bluetooth scan',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_SCAN],
+      );
+      console.log(
+        'Bluetooth advertise',
+        statuses[PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE],
+      );
+    });
   }, []);
+
+  const [posX, setPosX] = useState(0);
+  const [posY, setPosY] = useState(0);
+
+  const [move, setMove] = useState(false);
 
   return (
     <>
-      {hasPermissions ? (
-        <>
-          <StatusBar />
+      <>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={colors.background}
+        />
+        <StateContext.Provider
+          value={{posX, setPosX, posY, setPosY, move, setMove}}>
           <BottomNav />
-        </>
-      ) : null}
+        </StateContext.Provider>
+      </>
     </>
 
     /*<SafeAreaView style={backgroundStyle}>
@@ -163,3 +195,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+export {StateContext};
