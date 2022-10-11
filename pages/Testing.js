@@ -15,8 +15,6 @@ import BluetoothSerial from "react-native-bluetooth-serial-speedy";
 
 import { IconButton, MD3Colors } from "react-native-paper";
 
-let prevDir = "";
-
 const Testing = (props) => {
   const { colors } = props.theme;
 
@@ -41,7 +39,6 @@ const Testing = (props) => {
   const handleChangeX = (input) => {
     if (input != x) {
       setX(input);
-      //setPosX(input);
     }
   };
   const optimizedX = useCallback(debounce(handleChangeX));
@@ -49,8 +46,6 @@ const Testing = (props) => {
   const handleChangeY = (input) => {
     if (input != y) {
       setY(input);
-      //posY = input;
-      //setPosY(input);
     }
   };
   const optimizedY = useCallback(debounce(handleChangeY));
@@ -62,21 +57,10 @@ const Testing = (props) => {
     return false;
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (front) {
-        BluetoothSerial.write("w").then((res) => console.log(res));
-      }
-    }, 100);
-  }, []);
-
   let eroare = 10;
 
   useEffect(() => {
-    //setPosX(x);
-    //setPosY(y);
     //TODO: CHANGE THIS (ONENOTE)
-    let output = parseInt(x).toString() + parseInt(y).toString();
     /*if (x > 50 + eroare && y > 50 + eroare) {
       if (inInterval(x, 50, 65)) setDir("w");
       else setDir("e");
@@ -91,31 +75,14 @@ const Testing = (props) => {
     if (x == 0 && y == 0) {
       setDir("s");
     }
-    if (prevDir != dir) {
-      //BluetoothSerial.write(dir).then(res => console.log(res));
-      prevDir = dir;
-    }
   }, [x, y]);
 
   const [checked, setChecked] = useState(false);
-
-  const [front, setFront] = useState(false);
-  const timer = useRef(null);
-  const [counter, setCounter] = useState(0);
-
-  const addOne = () => {
-    setDir("w");
-    timer.current = setTimeout(addOne, 200);
-  };
 
   useEffect(() => {
     BluetoothSerial.write(dir).then((res) => console.log(res));
   }, [dir]);
 
-  const stopTimer = () => {
-    setDir("s");
-    clearTimeout(timer.current);
-  };
   return (
     <>
       <Header title="Navigation" />
