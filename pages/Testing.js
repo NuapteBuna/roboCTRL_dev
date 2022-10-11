@@ -75,8 +75,9 @@ const Testing = (props) => {
   useEffect(() => {
     //setPosX(x);
     //setPosY(y);
+    //TODO: CHANGE THIS (ONENOTE)
     let output = parseInt(x).toString() + parseInt(y).toString();
-    if (x > 50 + eroare && y > 50 + eroare) {
+    /*if (x > 50 + eroare && y > 50 + eroare) {
       if (inInterval(x, 50, 65)) setDir("w");
       else setDir("e");
     } else if (x < 50 && y > 50) {
@@ -86,7 +87,7 @@ const Testing = (props) => {
       setDir("a");
     } else if (x > 50 && y < 50) {
       setDir("d");
-    }
+    }*/
     if (x == 0 && y == 0) {
       setDir("s");
     }
