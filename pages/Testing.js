@@ -131,12 +131,12 @@ const Testing = props => {
           <Button
             size={20}
             mode="contained"
-            onPressIn={addOne}
+            onPressIn={() => setDir('w')}
             onPress={() => {
-              addOne;
+              setDir("w");
             }}
-            onPressOut={stopTimer}>
-            Press
+            onPressOut={() => setDir('s')}>
+            Pres 
           </Button>
           <Text>hello world</Text>
           <Checkbox
