@@ -193,7 +193,7 @@ const Testing = (props) => {
           ></IconButton>
 
           <IconButton
-            icon="arrow-down"
+            icon="arrow-right"
             size={20}
             mode="contained"
             onPressIn={() => setDir("d")}
