@@ -1,32 +1,32 @@
-import {Text} from 'react-native-paper';
-import {Button} from 'react-native-paper';
-import {View} from 'react-native';
-import {useCallback, useContext, useState} from 'react';
-import {KorolJoystick} from 'korol-joystick-custom';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {withTheme} from 'react-native-paper';
-import Header from '../components/Header/Header';
-import {useEffect, useRef} from 'react';
+import { Text } from "react-native-paper";
+import { Button } from "react-native-paper";
+import { View } from "react-native";
+import { useCallback, useContext, useState } from "react";
+import { KorolJoystick } from "korol-joystick-custom";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { withTheme } from "react-native-paper";
+import Header from "../components/Header/Header";
+import { useEffect, useRef } from "react";
 
-import {Checkbox} from 'react-native-paper';
-import {StateContext} from '../App';
+import { Checkbox } from "react-native-paper";
+import { StateContext } from "../App";
 
-import BluetoothSerial from 'react-native-bluetooth-serial-speedy';
+import BluetoothSerial from "react-native-bluetooth-serial-speedy";
 
-import {IconButton, MD3Colors} from 'react-native-paper';
+import { IconButton, MD3Colors } from "react-native-paper";
 
-let prevDir = '';
+let prevDir = "";
 
-const Testing = props => {
-  const {colors} = props.theme;
+const Testing = (props) => {
+  const { colors } = props.theme;
 
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
 
-  const {posX, setPosX, posY, setPosY, move, setMove} =
+  const { posX, setPosX, posY, setPosY, move, setMove } =
     useContext(StateContext);
 
-  const debounce = func => {
+  const debounce = (func) => {
     let timer;
     return function (...args) {
       const context = this;
@@ -38,7 +38,7 @@ const Testing = props => {
     };
   };
 
-  const handleChangeX = input => {
+  const handleChangeX = (input) => {
     if (input != x) {
       setX(input);
       //setPosX(input);
@@ -46,7 +46,7 @@ const Testing = props => {
   };
   const optimizedX = useCallback(debounce(handleChangeX));
 
-  const handleChangeY = input => {
+  const handleChangeY = (input) => {
     if (input != y) {
       setY(input);
       //posY = input;
@@ -55,7 +55,7 @@ const Testing = props => {
   };
   const optimizedY = useCallback(debounce(handleChangeY));
 
-  const [dir, setDir] = useState('');
+  const [dir, setDir] = useState("");
 
   const inInterval = (x, a, b) => {
     if (x >= a && x <= b) return true;
@@ -65,7 +65,7 @@ const Testing = props => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (front) {
-        BluetoothSerial.write('w').then(res => console.log(res));
+        BluetoothSerial.write("w").then((res) => console.log(res));
       }
     }, 100);
   }, []);
@@ -77,18 +77,18 @@ const Testing = props => {
     //setPosY(y);
     let output = parseInt(x).toString() + parseInt(y).toString();
     if (x > 50 + eroare && y > 50 + eroare) {
-      if (inInterval(x, 50, 65)) setDir('w');
-      else setDir('e');
+      if (inInterval(x, 50, 65)) setDir("w");
+      else setDir("e");
     } else if (x < 50 && y > 50) {
-      if (inInterval(x, 35, 50)) setDir('w');
-      else setDir('q');
+      if (inInterval(x, 35, 50)) setDir("w");
+      else setDir("q");
     } else if (x < 50 && y < 50) {
-      setDir('a');
+      setDir("a");
     } else if (x > 50 && y < 50) {
-      setDir('d');
+      setDir("d");
     }
     if (x == 0 && y == 0) {
-      setDir('s');
+      setDir("s");
     }
     if (prevDir != dir) {
       //BluetoothSerial.write(dir).then(res => console.log(res));
@@ -103,55 +103,119 @@ const Testing = props => {
   const [counter, setCounter] = useState(0);
 
   const addOne = () => {
-    setDir('w');
+    setDir("w");
     timer.current = setTimeout(addOne, 200);
   };
 
   useEffect(() => {
-    BluetoothSerial.write(dir).then(res => console.log(res));
+    BluetoothSerial.write(dir).then((res) => console.log(res));
   }, [dir]);
 
   const stopTimer = () => {
-    setDir('s');
+    setDir("s");
     clearTimeout(timer.current);
   };
   return (
     <>
       <Header title="Navigation" />
-      <GestureHandlerRootView style={{flex: 1}}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <View
           style={{
-            display: 'flex',
+            display: "flex",
             flex: 1,
-            alignContent: 'center',
-            alignItems: 'center',
-            alignSelf: 'center',
-            marginTop: '60%',
-          }}>
-          <Button
+            alignContent: "center",
+            alignItems: "center",
+            alignSelf: "center",
+            marginTop: "60%",
+          }}
+        >
+          <IconButton
+            icon="arrow-up"
             size={20}
             mode="contained"
-            onPressIn={() => setDir('w')}
-            onPress={() => {
-              setDir("w");
-            }}
-            onPressOut={() => setDir('s')}>
-            Pres 
-          </Button>
+            onPressIn={() => setDir("w")}
+            onPress={() => setDir("w")}
+            onPressOut={() => setDir("s")}
+          ></IconButton>
+
+          <IconButton
+            icon="arrow-down"
+            size={20}
+            mode="contained"
+            onPressIn={() => setDir("x")}
+            onPress={() => setDir("x")}
+            onPressOut={() => setDir("s")}
+          ></IconButton>
+
+          <IconButton
+            icon="arrow-top-right"
+            size={20}
+            mode="contained"
+            onPressIn={() => setDir("e")}
+            onPress={() => setDir("e")}
+            onPressOut={() => setDir("s")}
+          ></IconButton>
+
+          <IconButton
+            icon="arrow-top-left"
+            size={20}
+            mode="contained"
+            onPressIn={() => setDir("q")}
+            onPress={() => setDir("q")}
+            onPressOut={() => setDir("s")}
+          ></IconButton>
+
+          <IconButton
+            icon="arrow-bottom-left"
+            size={20}
+            mode="contained"
+            onPressIn={() => setDir("z")}
+            onPress={() => setDir("z")}
+            onPressOut={() => setDir("s")}
+          ></IconButton>
+
+          <IconButton
+            icon="arrow-bottom-right"
+            size={20}
+            mode="contained"
+            onPressIn={() => setDir("c")}
+            onPress={() => setDir("c")}
+            onPressOut={() => setDir("s")}
+          ></IconButton>
+
+          <IconButton
+            icon="arrow-left"
+            size={20}
+            mode="contained"
+            onPressIn={() => setDir("a")}
+            onPress={() => setDir("a")}
+            onPressOut={() => setDir("s")}
+          ></IconButton>
+
+          <IconButton
+            icon="arrow-down"
+            size={20}
+            mode="contained"
+            onPressIn={() => setDir("d")}
+            onPress={() => setDir("d")}
+            onPressOut={() => setDir("s")}
+          ></IconButton>
+
           <Text>hello world</Text>
           <Checkbox
-            status={checked ? 'checked' : 'unchecked'}
+            status={checked ? "checked" : "unchecked"}
             onPress={() => {
               setChecked(!checked);
               setMove(!checked);
-            }}></Checkbox>
+            }}
+          ></Checkbox>
           <KorolJoystick
             //color={colors.secondary}
             radius={75}
-            onMove={data => (
+            onMove={(data) => (
               optimizedX(data.position.x), optimizedY(data.position.y)
             )}
-            onStop={data => (
+            onStop={(data) => (
               optimizedX(data.position.x), optimizedY(data.position.y)
             )}
           />
