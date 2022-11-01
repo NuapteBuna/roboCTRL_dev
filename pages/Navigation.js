@@ -15,7 +15,7 @@ import BluetoothSerial from 'react-native-bluetooth-serial-speedy';
 
 import {IconButton, MD3Colors} from 'react-native-paper';
 
-const Testing = props => {
+const Navigation = props => {
   const {colors} = props.theme;
 
   const [x, setX] = useState(0);
@@ -244,4 +244,4 @@ const Testing = props => {
     </>
   );
 };
-export default withTheme(Testing);
+export default withTheme(Navigation);
