@@ -1,3 +1,4 @@
+import React, {useEffect} from 'react';
 import {StateContext} from '../App';
 import {useCallback, useContext, useState} from 'react';
 import {
@@ -14,6 +15,8 @@ import {
 import {StyleSheet} from 'react-native';
 import {withTheme} from 'react-native-paper';
 import {Appearance} from 'react-native';
+import Header from '../components/Header/Header';
+import BluetoothSerial from 'react-native-bluetooth-serial-speedy';
 
 const ArmControl = props => {
   const {colors} = props.theme;
@@ -26,18 +29,46 @@ const ArmControl = props => {
   }
   const {posX, setPosX, posY, setPosY, move, setMove} =
     useContext(StateContext);
+
+  const [slider1Value, setSlider1Value] = useState(0);
+
+  const onSliderReset = () => {
+    setSlider1Value(0);
+  };
+
+  useEffect(() => {
+    const s = 'r' + slider1Value.toString();
+    BluetoothSerial.write(s).then(res => console.log(res));
+  }, [slider1Value]);
+
   return (
-    <View>
-      <Slider
-        onValueChange={() => console.log('value changed')}
-        minimumValue={-100}
-        maximumValue={100}
-        value={-30}
-        minimumTrackTintColor={colors.primary}
-        thumbTintColor={colors.primary}
-        containerStyle={styles.slider}
-      />
-    </View>
+    <>
+      <Header title="Arm Control" />
+      <View
+        style={{
+          width: 400,
+          alignContent: 'center',
+          alignSelf: 'center',
+          marginTop: 50,
+          padding: 20,
+        }}>
+        <Text text60>Rotation</Text>
+        <Slider
+          onValueChange={value => setSlider1Value(value)}
+          value={0}
+          minimumValue={0}
+          maximumValue={180}
+          step={1}
+          minimumTrackTintColor={colors.primary}
+          thumbTintColor={colors.primary}
+          containerStyle={styles.slider}
+          onReset={onSliderReset}
+        />
+        <Text bodySmall $textNeutral style={styles.text} numberOfLines={1}>
+          {slider1Value}
+        </Text>
+      </View>
+    </>
   );
 };
 
